@@ -1,0 +1,1 @@
+/opt/intel/oneapi/compiler/2025.1/bin/icpx  -fsycl -O2 -g -DNDEBUG  -lpcap -qtbb "CMakeFiles/gpu-router.dir/gpu-router.cpp.o" -o gpu-router 

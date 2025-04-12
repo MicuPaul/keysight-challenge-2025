@@ -12,4 +12,7 @@ if (NOT CMAKE_BUILD_TYPE)
         FORCE)
 endif()
 add_executable (gpu-router gpu-router.cpp)
-add_custom_target (run ./gpu-router)
+add_custom_target (run
+	COMMAND ./gpu-router wlo1
+	DEPENDS gpu-router
+)
