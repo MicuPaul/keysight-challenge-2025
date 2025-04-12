@@ -72,28 +72,28 @@ int main(int argc, char* argv[]) {
             if (ret <= 0 || header->caplen > max_packet_size) continue;
             std::memcpy(burst[count].data(), pkt, header->caplen);
             count++;
-        }
+    	    }
         return burst;
     }};
 
     using ParsedMatrix = PacketMatrix;
     tbb::flow::function_node<PacketMatrix, ParsedMatrix> parser_node{
-        g, tbb::flow::unlimited, [](PacketMatrix burst) -> ParsedMatrix {
-            ParsedMatrix parsed{};
-            size_t idx = 0;
-            for (const auto& pkt : burst) {
-                if (is_ipv4(pkt.data())) {
-                    parsed[idx++] = pkt;
-                }
-                else if (is_ipv6(pkt.data())) {
-                    parsed[idx++] = pkt;
-                }
+    g, tbb::flow::unlimited, [&](PacketMatrix burst) -> ParsedMatrix {
+        ParsedMatrix parsed{};
 
+        size_t idx = 0;
+        for (const auto& pkt : burst) {
+            if (is_ipv4(pkt.data())) {
+                parsed[idx++] = pkt;
             }
-            return parsed;
+            else if (is_ipv6(pkt.data())) {
+                parsed[idx++] = pkt;
+            }
         }
-    };
 
+        return parsed;
+    }
+    };
     tbb::flow::function_node<ParsedMatrix, ParsedMatrix> routing_node{
         g, tbb::flow::unlimited, [&](ParsedMatrix packets) -> ParsedMatrix {
             sycl::buffer<uint8_t, 2> buf((uint8_t*)packets.data(), sycl::range<2>(burst_size, packet_fields));
