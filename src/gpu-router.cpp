@@ -124,7 +124,9 @@ int main(int argc, char* argv[]) {
             device.sll_ifindex = if_nametoindex(interface_name);
 
             for (const auto& pkt : packets) {
-            	sendto(sock, pkt.data(), max_packet_size, 0, (struct sockaddr*)&device, sizeof(device));
+	    	if (pkt[12] == 0x08 && pkt[13] == 0x00) {
+            	    sendto(sock, pkt.data(), max_packet_size, 0, (struct sockaddr*)&device, sizeof(device));
+		}
             }
             close(sock);
         }

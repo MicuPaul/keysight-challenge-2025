@@ -67,7 +67,7 @@ include src/CMakeFiles/run.dir/compiler_depend.make
 include src/CMakeFiles/run.dir/progress.make
 
 src/CMakeFiles/run: src/gpu-router
-	cd /keysight-challenge-2025/build/src && ./gpu-router wlo1
+	cd /keysight-challenge-2025/build/src && ./gpu-router wlo1 wlo1
 
 run: src/CMakeFiles/run
 run: src/CMakeFiles/run.dir/build.make
