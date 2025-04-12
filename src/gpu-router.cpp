@@ -48,6 +48,13 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    //SCRIEM INTR-UN PCAP OUTPUT CE TRIMITEM PRIN SOCKET
+    pcap_dumper_t* dumper = pcap_dump_open(pcap, "output.pcap");
+    if (!dumper) {
+    	std::cerr << "Error opening output file: " << pcap_geterr(pcap) << std::endl;
+    	return 1;
+    }
+
     tbb::global_control gc(tbb::global_control::max_allowed_parallelism, 4);
     tbb::flow::graph g;
 
@@ -110,8 +117,8 @@ int main(int argc, char* argv[]) {
         }
     };
 
-    tbb::flow::function_node<ParsedMatrix> send_node{
-        g, tbb::flow::serial, [interface_name](const ParsedMatrix& packets) {
+	tbb::flow::function_node<ParsedMatrix> send_node{
+    	    g, tbb::flow::serial, [interface_name, &dumper](const ParsedMatrix& packets) {
             int sock = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
             if (sock == -1) {
                 perror("Socket creation failed");
@@ -126,6 +133,12 @@ int main(int argc, char* argv[]) {
             for (const auto& pkt : packets) {
 	    	if (pkt[12] == 0x08 && pkt[13] == 0x00) {
             	    sendto(sock, pkt.data(), max_packet_size, 0, (struct sockaddr*)&device, sizeof(device));
+		    struct pcap_pkthdr hdr;
+                    gettimeofday(&hdr.ts, nullptr);
+                    hdr.caplen = max_packet_size;
+                    hdr.len = max_packet_size;
+
+                    pcap_dump((u_char*)dumper, &hdr, pkt.data());
 		}
             }
             close(sock);
@@ -141,5 +154,6 @@ int main(int argc, char* argv[]) {
 
     std::cout << "Pipeline complete.\n";
     pcap_close(pcap);
+    pcap_dump_close(dumper);
     return 0;
 }
