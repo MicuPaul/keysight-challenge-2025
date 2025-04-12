@@ -7,5 +7,5 @@ The main description of the task is in this [document](https://docs.google.com/d
 
 ####### !!!ATENTIE!!! #######
 PENTRU A SELECTA INTERFETELE DE RECIEVE SI TRANSMIT, DESCHIDETI
-CmakeLists.txt SI SCHIMBATI LA COMMAND ./gpu-router arg0 arg1
+CmakeLists.txt DIN DIRECTORUL SRC SI SCHIMBATI LA COMMAND ./gpu-router arg0 arg1
 UNDE arg0 E SURSA si arg1 E DESTINATIA. (implicit am lasat-o wlo1 wlo1)
